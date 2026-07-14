@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Bloom — Job Checklist</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --cream:    #FAF8F4;
+  --linen:    #F0EBE3;
+  --stone:    #DDD5C8;
+  --gold:     #8B7355;
+  --gold-lt:  #C4A882;
+  --gold-bg:  #F5F0E8;
+  --sage:     #6B7F6B;
+  --sage-lt:  #EBF0EB;
+  --ink:      #1C1A17;
+  --muted:    #5C5242;
+  --faint:    #9B9080;
+  --white:    #FFFFFF;
+  --done-bg:  #EBF2EB;
+  --done-txt: #2D5A2D;
+  --done-bdr: #A8C8A8;
+  --radius:   14px;
+  --radius-sm:10px;
+}
+
+html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  min-height: 100vh;
+  padding-bottom: 100px;
+}
+
+/* ── TOPBAR ─────────────────────────────── */
+.topbar {
+  background: var(--ink);
+  padding: 0 20px;
+  position: sticky; top: 0; z-index: 50;
+}
+.topbar-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0 10px;
+}
+.brand {
+  display: flex; align-items: center; gap: 10px;
+}
+.brand-logo {
+  width: 32px; height: 32px;
+  background: var(--gold);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 15px; color: white; font-weight: 500;
+}
+.brand-text-main {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px; color: white; font-weight: 400; line-height: 1;
+}
+.brand-text-sub {
+  font-size: 10px; color: #888; letter-spacing: 0.06em; margin-top: 2px;
+}
+.progress-pill {
+  background: rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 6px 14px;
+  text-align: center;
+}
+.progress-pct {
+  font-size: 20px; font-weight: 600; color: white; line-height: 1;
+}
+.progress-sub { font-size: 10px; color: #777; margin-top: 1px; }
+.progress-track {
+  height: 2px; background: rgba(255,255,255,0.1);
+  margin: 8px 0 0;
+  border-radius: 2px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-lt), var(--gold));
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+/* ── JOB INFO ───────────────────────────── */
+.job-card {
+  margin: 14px 16px 0;
+  background: white;
+  border-radius: var(--radius);
+  border: 1px solid var(--stone);
+  overflow: hidden;
+}
+.job-card-header {
+  background: var(--gold-bg);
+  padding: 10px 14px;
+  display: flex; align-items: center; gap: 8px;
+  border-bottom: 1px solid var(--stone);
+}
+.job-card-header i { color: var(--gold); font-size: 13px; }
+.job-card-header span { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); }
+.job-fields { padding: 12px 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.field-group label {
+  display: block; font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--faint); margin-bottom: 4px;
+}
+.field-group input {
+  width: 100%;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 500;
+  color: var(--ink);
+  background: var(--cream);
+  border: 1px solid var(--stone);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+.field-group input:focus { border-color: var(--gold); background: white; }
+.field-group input::placeholder { color: var(--stone); font-weight: 400; }
+
+/* ── SERVICE SELECTOR ───────────────────── */
+.service-row {
+  padding: 0 14px 12px;
+  border-top: 1px solid var(--linen);
+  padding-top: 10px;
+}
+.service-row-label {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--faint); margin-bottom: 8px;
+}
+.svc-btns { display: flex; gap: 6px; }
+.svc-btn {
+  flex: 1;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 500;
+  padding: 8px 4px;
+  border: 1.5px solid var(--stone);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  line-height: 1.3;
+  text-align: center;
+}
+.svc-btn i { font-size: 15px; color: var(--faint); }
+.svc-btn.active {
+  background: var(--ink); color: white;
+  border-color: var(--ink);
+}
+.svc-btn.active i { color: var(--gold-lt); }
+
+/* ── ROOM NAV ───────────────────────────── */
+.room-nav-wrap {
+  padding: 12px 0 4px;
+  border-bottom: 1px solid var(--stone);
+  background: var(--cream);
+  position: sticky; top: 77px; z-index: 40;
+}
+.room-nav {
+  display: flex; gap: 8px;
+  padding: 0 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.room-nav::-webkit-scrollbar { display: none; }
+.room-tab {
+  flex-shrink: 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 500;
+  padding: 7px 14px;
+  border: 1.5px solid var(--stone);
+  border-radius: 20px;
+  background: white;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex; align-items: center; gap: 6px;
+  white-space: nowrap;
+}
+.room-tab i { font-size: 11px; color: var(--faint); }
+.room-tab.active {
+  background: var(--ink); color: white;
+  border-color: var(--ink);
+}
+.room-tab.active i { color: var(--gold-lt); }
+.room-tab.complete {
+  background: var(--done-bg);
+  border-color: var(--done-bdr);
+  color: var(--done-txt);
+}
+.room-tab.complete i { color: var(--done-txt); }
+.room-tab.complete.active {
+  background: var(--done-txt); color: white;
+  border-color: var(--done-txt);
+}
+
+/* ── ROOM PANEL ─────────────────────────── */
+.room-panel { display: none; }
+.room-panel.active { display: block; }
+
+.room-hero {
+  margin: 12px 16px 0;
+  background: white;
+  border-radius: var(--radius);
+  border: 1px solid var(--stone);
+  overflow: hidden;
+}
+.room-hero-top {
+  padding: 14px 16px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--linen);
+}
+.room-hero-icon {
+  width: 44px; height: 44px;
+  border-radius: var(--radius-sm);
+  background: var(--gold-bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-right: 12px;
+}
+.room-hero-left { display: flex; align-items: flex-start; flex: 1; }
+.room-hero-text {}
+.room-name { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 500; color: var(--ink); line-height: 1.1; }
+.room-tip { font-size: 11px; color: var(--faint); margin-top: 3px; line-height: 1.5; }
+.room-mini-progress { text-align: right; flex-shrink: 0; }
+.room-mini-pct { font-size: 22px; font-weight: 600; color: var(--ink); line-height: 1; }
+.room-mini-count { font-size: 10px; color: var(--faint); }
+.room-mini-bar { height: 3px; background: var(--linen); border-radius: 2px; margin-top: 6px; width: 60px; overflow: hidden; }
+.room-mini-fill { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.3s; }
+
+.cloth-pill {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 16px;
+  font-size: 11px; color: var(--muted);
+  font-style: italic;
+}
+.cloth-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── CHECK ITEMS ────────────────────────── */
+.items-wrap { padding: 0 16px; margin-top: 10px; }
+.section-eyebrow {
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--faint);
+  padding: 12px 2px 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+.section-eyebrow::after {
+  content: '';
+  flex: 1; height: 1px;
+  background: var(--stone);
+}
+
+.check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  background: white;
+  border-radius: var(--radius-sm);
+  margin-bottom: 5px;
+  border: 1.5px solid transparent;
+  border-color: var(--linen);
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.check-item:active { transform: scale(0.98); opacity: 0.85; }
+.check-item.checked {
+  background: var(--done-bg);
+  border-color: var(--done-bdr);
+}
+.check-item.bloom {
+  border-left: 3px solid var(--gold);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: var(--gold-bg);
+  border-color: transparent;
+  border-left-color: var(--gold);
+}
+.check-item.bloom.checked {
+  background: var(--done-bg);
+  border-left-color: var(--done-txt);
+  border-color: var(--done-bdr);
+  border-left-color: var(--done-txt);
+}
+
+.cb-box {
+  width: 24px; height: 24px;
+  border: 2px solid var(--stone);
+  border-radius: 7px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+  background: white;
+  margin-top: 0px;
+}
+.check-item.bloom .cb-box { border-color: var(--gold-lt); background: white; }
+.check-item.checked .cb-box {
+  background: var(--done-txt);
+  border-color: var(--done-txt);
+}
+.cb-check { display: none; color: white; font-size: 11px; }
+.check-item.checked .cb-check { display: block; }
+
+.cb-content { flex: 1; padding-top: 1px; }
+.bloom-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 9px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--gold);
+  background: white;
+  border: 1px solid var(--gold-lt);
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-bottom: 4px;
+}
+.bloom-badge i { font-size: 8px; }
+.check-item.checked .bloom-badge { color: var(--done-txt); border-color: var(--done-bdr); background: white; }
+.cb-label {
+  font-size: 13.5px; color: var(--muted);
+  line-height: 1.45; font-weight: 400;
+}
+.check-item.checked .cb-label {
+  color: var(--done-txt);
+}
+
+/* ── DEPARTURE ──────────────────────────── */
+.departure-card {
+  margin: 16px 16px 0;
+  background: var(--ink);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.dep-header {
+  padding: 12px 16px;
+  display: flex; align-items: center; gap: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.dep-header i { color: var(--gold-lt); font-size: 14px; }
+.dep-header-text {}
+.dep-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.9); }
+.dep-subtitle { font-size: 10px; color: #666; margin-top: 1px; }
+
+.dep-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  transition: background 0.15s;
+}
+.dep-item:last-child { border-bottom: none; }
+.dep-item:active { background: rgba(255,255,255,0.04); }
+.dep-cb {
+  width: 24px; height: 24px;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 7px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.dep-item.checked .dep-cb { background: var(--gold); border-color: var(--gold); }
+.dep-check { display: none; color: white; font-size: 11px; }
+.dep-item.checked .dep-check { display: block; }
+.dep-step-num {
+  font-size: 10px; font-weight: 700;
+  color: #555; flex-shrink: 0;
+  padding-top: 4px;
+  width: 16px; text-align: right;
+}
+.dep-text {
+  flex: 1;
+  font-size: 13.5px; color: rgba(255,255,255,0.75);
+  line-height: 1.5;
+}
+.dep-item.checked .dep-text { color: rgba(255,255,255,0.3); text-decoration: line-through; }
+.dep-icon { font-size: 14px; color: #444; flex-shrink: 0; padding-top: 2px; }
+
+/* ── BOTTOM BAR ─────────────────────────── */
+.bottom-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: rgba(250,248,244,0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid var(--stone);
+  padding: 12px 16px 24px;
+}
+.complete-btn {
+  width: 100%;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px; font-weight: 600;
+  background: var(--stone);
+  color: var(--faint);
+  border: none;
+  border-radius: var(--radius);
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.complete-btn.ready {
+  background: var(--ink);
+  color: white;
+  box-shadow: 0 4px 20px rgba(28,26,23,0.25);
+}
+.complete-btn.all-done {
+  background: var(--done-txt);
+  color: white;
+}
+
+/* ── DONE SCREEN ────────────────────────── */
+.done-screen {
+  display: none;
+  position: fixed; inset: 0; z-index: 200;
+  background: var(--cream);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+.done-screen.show { display: flex; }
+.done-bloom { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--gold); margin-bottom: 1rem; letter-spacing: 0.1em; }
+.done-circle {
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  background: var(--done-bg);
+  border: 3px solid var(--done-bdr);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px; margin-bottom: 1.5rem;
+}
+.done-title { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 500; color: var(--ink); margin-bottom: 8px; }
+.done-info { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 2rem; }
+.done-info strong { color: var(--ink); }
+.done-reminder {
+  background: var(--linen);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-size: 12px; color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  text-align: left;
+  max-width: 320px;
+  width: 100%;
+}
+.done-reminder strong { color: var(--gold); }
+.done-btn {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 600;
+  background: var(--ink); color: white;
+  border: none; border-radius: var(--radius);
+  padding: 14px 32px; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(28,26,23,0.2);
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-logo">B</div>
+      <div>
+        <div class="brand-text-main">Bloom</div>
+        <div class="brand-text-sub" id="svc-label-top">Standard Home Care</div>
+      </div>
+    </div>
+    <div class="progress-pill">
+      <div class="progress-pct" id="pct-top">0%</div>
+      <div class="progress-sub" id="cnt-top">0 of 0</div>
+    </div>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="prog-fill" style="width:0%"></div>
+  </div>
+</div>
+
+<!-- JOB INFO CARD -->
+<div class="job-card">
+  <div class="job-card-header">
+    <i class="fa-solid fa-clipboard-list"></i>
+    <span>Visit Details</span>
+  </div>
+  <div class="job-fields">
+    <div class="field-group">
+      <label><i class="fa-solid fa-house" style="font-size:9px"></i> Client</label>
+      <input type="text" id="f-client" placeholder="Last name">
+    </div>
+    <div class="field-group">
+      <label><i class="fa-solid fa-calendar" style="font-size:9px"></i> Date</label>
+      <input type="date" id="f-date">
+    </div>
+    <div class="field-group">
+      <label><i class="fa-solid fa-user" style="font-size:9px"></i> Team Lead</label>
+      <input type="text" id="f-lead" placeholder="Your name">
+    </div>
+    <div class="field-group">
+      <label><i class="fa-solid fa-clock" style="font-size:9px"></i> Start Time</label>
+      <input type="time" id="f-time">
+    </div>
+  </div>
+  <div class="service-row">
+    <div class="service-row-label">Service Type</div>
+    <div class="svc-btns">
+      <button class="svc-btn active" onclick="setSvc('standard',this)">
+        <i class="fa-solid fa-broom"></i>Standard
+      </button>
+      <button class="svc-btn" onclick="setSvc('deep',this)">
+        <i class="fa-solid fa-sparkles"></i>Deep Reset
+      </button>
+      <button class="svc-btn" onclick="setSvc('moveinout',this)">
+        <i class="fa-solid fa-boxes-packing"></i>Move In/Out
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ROOM NAV -->
+<div class="room-nav-wrap">
+  <div class="room-nav">
+    <button class="room-tab active" onclick="showRoom('home',this)" id="tab-home"><i class="fa-solid fa-check-circle" id="icon-home"></i>Home</button>
+    <button class="room-tab" onclick="showRoom('kitchen',this)" id="tab-kitchen"><i class="fa-solid fa-utensils" id="icon-kitchen"></i>Kitchen</button>
+    <button class="room-tab" onclick="showRoom('bathrooms',this)" id="tab-bathrooms"><i class="fa-solid fa-shower" id="icon-bathrooms"></i>Bathrooms</button>
+    <button class="room-tab" onclick="showRoom('bedrooms',this)" id="tab-bedrooms"><i class="fa-solid fa-bed" id="icon-bedrooms"></i>Bedrooms</button>
+    <button class="room-tab" onclick="showRoom('living',this)" id="tab-living"><i class="fa-solid fa-couch" id="icon-living"></i>Living</button>
+  </div>
+</div>
+
+<!-- ══════════ ROOM: HOME ══════════ -->
+<div class="room-panel active" id="room-home">
+  <div class="room-hero">
+    <div class="room-hero-top">
+      <div class="room-hero-left">
+        <div class="room-hero-icon">🏠</div>
+        <div class="room-hero-text">
+          <div class="room-name">Throughout the Home</div>
+          <div class="room-tip">Every room · Top to bottom · Back to front</div>
+        </div>
+      </div>
+      <div class="room-mini-progress">
+        <div class="room-mini-pct" id="pct-home">0%</div>
+        <div class="room-mini-count" id="cnt-home">0/0</div>
+        <div class="room-mini-bar"><div class="room-mini-fill" id="bar-home" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="cloth-pill">
+      <div class="cloth-dot" style="background:#FFCC00"></div>
+      Yellow cloths for surfaces &nbsp;·&nbsp;
+      <div class="cloth-dot" style="background:#4A90D9"></div>
+      Blue cloths for glass only
+    </div>
+  </div>
+
+  <div class="items-wrap">
+    <div class="section-eyebrow"><i class="fa-solid fa-list-check" style="color:var(--faint);font-size:10px"></i> Standard — every visit</div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Vacuum carpets, rugs, and upholstered furniture</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Mop all hard floors (vacuum first — always)</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Dust all accessible surfaces and décor — top to bottom</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Wipe and sanitize light switches and door handles</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Clean mirrors and glass (blue cloths + glass cleaner only)</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Spot clean doors and door frames</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Remove visible cobwebs from corners and ceiling edges</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Straighten pillows, throw blankets, and visible surfaces</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Wipe baseboards (maintenance cycle — as needed)</div></div></div>
+
+    <div class="section-eyebrow"><i class="fa-solid fa-star" style="color:var(--gold);font-size:10px"></i> Bloom Standard</div>
+    <div class="check-item bloom" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="bloom-badge"><i class="fa-solid fa-star"></i> Bloom</div><div class="cb-label">Disinfect all high-touch points at end of each room: handles, switches, remotes</div></div></div>
+  </div>
+</div>
+
+<!-- ══════════ ROOM: KITCHEN ══════════ -->
+<div class="room-panel" id="room-kitchen">
+  <div class="room-hero">
+    <div class="room-hero-top">
+      <div class="room-hero-left">
+        <div class="room-hero-icon">🍳</div>
+        <div class="room-hero-text">
+          <div class="room-name">Kitchen</div>
+          <div class="room-tip">Green cloths only · Degreaser for stovetop · Stainless WITH the grain</div>
+        </div>
+      </div>
+      <div class="room-mini-progress">
+        <div class="room-mini-pct" id="pct-kitchen">0%</div>
+        <div class="room-mini-count" id="cnt-kitchen">0/0</div>
+        <div class="room-mini-bar"><div class="room-mini-fill" id="bar-kitchen" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="cloth-pill">
+      <div class="cloth-dot" style="background:#4CAF50"></div>
+      Green cloths · NEVER use bathroom cloths here
+    </div>
+  </div>
+  <div class="items-wrap">
+    <div class="section-eyebrow"><i class="fa-solid fa-list-check" style="color:var(--faint);font-size:10px"></i> Standard</div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Clean and sanitize all countertops — remove items, clean under, replace neatly</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Wipe exterior of all appliances: fridge, oven, dishwasher, microwave</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Clean stovetop — burners, grates, knobs, surrounding surface</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Clean inside microwave — interior walls and turntable</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Polish and shine sink and faucet — no water spots or residue</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Spot clean cabinet fronts for fingerprints and food residue</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Sweep and mop floor — corners and under toe kicks</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Remove trash and replace liner (use client's bags first)</div></div></div>
+
+    <div class="section-eyebrow"><i class="fa-solid fa-star" style="color:var(--gold);font-size:10px"></i> Bloom Standard</div>
+    <div class="check-item bloom" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="bloom-badge"><i class="fa-solid fa-star"></i> Bloom</div><div class="cb-label">Wipe fridge handle, dishwasher handle, ALL light switches and door knobs</div></div></div>
+    <div class="check-item bloom" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="bloom-badge"><i class="fa-solid fa-star"></i> Bloom</div><div class="cb-label">Arrange counter items with intention — grouped and aligned, not just moved aside</div></div></div>
+    <div class="check-item bloom" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="bloom-badge"><i class="fa-solid fa-star"></i> Bloom</div><div class="cb-label">Place departure card flat and centered on counter — last thing before you leave</div></div></div>
+  </div>
+</div>
+
+<!-- ══════════ ROOM: BATHROOMS ══════════ -->
+<div class="room-panel" id="room-bathrooms">
+  <div class="room-hero">
+    <div class="room-hero-top">
+      <div class="room-hero-left">
+        <div class="room-hero-icon">🚿</div>
+        <div class="room-hero-text">
+          <div class="room-name">Bathrooms</div>
+          <div class="room-tip">Orange cloths · Never leave this room with them · Client's toilet brush always</div>
+        </div>
+      </div>
+      <div class="room-mini-progress">
+        <div class="room-mini-pct" id="pct-bathrooms">0%</div>
+        <div class="room-mini-count" id="cnt-bathrooms">0/0</div>
+        <div class="room-mini-bar"><div class="room-mini-fill" id="bar-bathrooms" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="cloth-pill">
+      <div class="cloth-dot" style="background:#FF6B35"></div>
+      Orange cloths only · Bowl cleaner inside toilet ONLY
+    </div>
+  </div>
+  <div class="items-wrap">
+    <div class="section-eyebrow"><i class="fa-solid fa-list-check" style="color:var(--faint);font-size:10px"></i> Standard</div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Clean and disinfect sink and countertop</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Polish fixtures and chrome — dry immediately, no water spots</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Clean mirror streak-free (blue cloth + glass cleaner)</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Scrub and disinfect toilet — bowl, under rim, seat, lid, base, floor around base</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Clean tub and shower walls, fixtures, glass door — rinse, squeegee glass dry</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Wipe cabinet exteriors</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Mop floor — including behind toilet and baseboards</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Remove trash and replace liner</div></div></div>
+
+    <div class="section-eyebrow"><i class="fa-solid fa-star" style="color:var(--gold);font-size:10px"></i> Bloom Standard</div>
+    <div class="check-item bloom" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="bloom-badge"><i class="fa-solid fa-star"></i> Bloom</div><div class="cb-label">Fold toilet paper end into a neat triangular point — every bathroom</div></div></div>
+    <div class="check-item bloom" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="bloom-badge"><i class="fa-solid fa-star"></i> Bloom</div><div class="cb-label">Towels in Bloom fold — smooth edge facing the door</div></div></div>
+    <div class="check-item bloom" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="bloom-badge"><i class="fa-solid fa-star"></i> Bloom</div><div class="cb-label">Check hand soap — refill from kit if running low</div></div></div>
+  </div>
+</div>
+
+<!-- ══════════ ROOM: BEDROOMS ══════════ -->
+<div class="room-panel" id="room-bedrooms">
+  <div class="room-hero">
+    <div class="room-hero-top">
+      <div class="room-hero-left">
+        <div class="room-hero-icon">🛏️</div>
+        <div class="room-hero-text">
+          <div class="room-name">Bedrooms</div>
+          <div class="room-tip">Yellow cloths · Blue for mirrors · Linen mist in primary bedroom at departure only</div>
+        </div>
+      </div>
+      <div class="room-mini-progress">
+        <div class="room-mini-pct" id="pct-bedrooms">0%</div>
+        <div class="room-mini-count" id="cnt-bedrooms">0/0</div>
+        <div class="room-mini-bar"><div class="room-mini-fill" id="bar-bedrooms" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="cloth-pill">
+      <div class="cloth-dot" style="background:#FFCC00"></div>
+      Yellow for surfaces &nbsp;·&nbsp;
+      <div class="cloth-dot" style="background:#4A90D9"></div>
+      Blue for mirrors
+    </div>
+  </div>
+  <div class="items-wrap">
+    <div class="section-eyebrow"><i class="fa-solid fa-list-check" style="color:var(--faint);font-size:10px"></i> Standard</div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Dust all surfaces — nightstands, dresser tops, ceiling fan blades</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Make bed fully — all layers, pillows arranged</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Clean mirrors streak-free (blue cloth)</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Vacuum floor including under bed edges and corners</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Wipe baseboards and door frames if dusty</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Empty trash if present</div></div></div>
+
+    <div class="section-eyebrow"><i class="fa-solid fa-star" style="color:var(--gold);font-size:10px"></i> Bloom Standard</div>
+    <div class="check-item bloom" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="bloom-badge"><i class="fa-solid fa-star"></i> Bloom</div><div class="cb-label">Bed made with pillows symmetrical, throw folded neatly at foot</div></div></div>
+    <div class="check-item bloom" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="bloom-badge"><i class="fa-solid fa-star"></i> Bloom</div><div class="cb-label">Nightstand cleared, wiped, items replaced with visual intention</div></div></div>
+  </div>
+</div>
+
+<!-- ══════════ ROOM: LIVING ══════════ -->
+<div class="room-panel" id="room-living">
+  <div class="room-hero">
+    <div class="room-hero-top">
+      <div class="room-hero-left">
+        <div class="room-hero-icon">🛋️</div>
+        <div class="room-hero-text">
+          <div class="room-name">Living Areas</div>
+          <div class="room-tip">Yellow cloths · TV screen dry microfiber only — no spray ever</div>
+        </div>
+      </div>
+      <div class="room-mini-progress">
+        <div class="room-mini-pct" id="pct-living">0%</div>
+        <div class="room-mini-count" id="cnt-living">0/0</div>
+        <div class="room-mini-bar"><div class="room-mini-fill" id="bar-living" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="cloth-pill">
+      <div class="cloth-dot" style="background:#FFCC00"></div>
+      Yellow for surfaces &nbsp;·&nbsp;
+      <div class="cloth-dot" style="background:#4A90D9"></div>
+      Blue for glass
+    </div>
+  </div>
+  <div class="items-wrap">
+    <div class="section-eyebrow"><i class="fa-solid fa-list-check" style="color:var(--faint);font-size:10px"></i> Standard</div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Dust all flat surfaces, shelves, entertainment units — top to bottom</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Wipe down furniture — move objects, dust under, replace in original place</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Vacuum upholstered furniture — cushions, sides, under cushions</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Vacuum rugs and hard floors — under furniture where accessible</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Wipe glass surfaces — TV with dry microfiber only, no spray ever</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Dust vents, ceiling fan blades, lamp shades</div></div></div>
+    <div class="check-item" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="cb-label">Clean entryway surfaces · Light tidying of visible areas</div></div></div>
+
+    <div class="section-eyebrow"><i class="fa-solid fa-star" style="color:var(--gold);font-size:10px"></i> Bloom Standard</div>
+    <div class="check-item bloom" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="bloom-badge"><i class="fa-solid fa-star"></i> Bloom</div><div class="cb-label">Straighten throw pillows, fold blankets, align remotes and books with intention</div></div></div>
+    <div class="check-item bloom" onclick="toggle(this)"><div class="cb-box"><i class="fa-solid fa-check cb-check"></i></div><div class="cb-content"><div class="bloom-badge"><i class="fa-solid fa-star"></i> Bloom</div><div class="cb-label">Arrange coffee table and shelf items with visual intention — not just cleared aside</div></div></div>
+  </div>
+</div>
+
+<!-- DEPARTURE RITUAL -->
+<div class="departure-card">
+  <div class="dep-header">
+    <i class="fa-solid fa-door-open"></i>
+    <div class="dep-header-text">
+      <div class="dep-title">Departure Ritual</div>
+      <div class="dep-subtitle">Complete in this exact order — every single visit</div>
+    </div>
+  </div>
+  <div class="dep-item" onclick="togDep(this)">
+    <div class="dep-cb"><i class="fa-solid fa-check dep-check"></i></div>
+    <i class="fa-solid fa-magnifying-glass dep-icon"></i>
+    <div class="dep-text">Final walkthrough — stand in doorway of every room. Fix anything not exactly right.</div>
+  </div>
+  <div class="dep-item" onclick="togDep(this)">
+    <div class="dep-cb"><i class="fa-solid fa-check dep-check"></i></div>
+    <i class="fa-solid fa-spray-can dep-icon"></i>
+    <div class="dep-text">Linen mist — primary bedroom only. 2 spritzes over duvet, 1 in air near pillows.</div>
+  </div>
+  <div class="dep-item" onclick="togDep(this)">
+    <div class="dep-cb"><i class="fa-solid fa-check dep-check"></i></div>
+    <i class="fa-regular fa-envelope dep-icon"></i>
+    <div class="dep-text">Departure card — handwrite client's first name, place flat and centered on kitchen counter.</div>
+  </div>
+  <div class="dep-item" onclick="togDep(this)">
+    <div class="dep-cb"><i class="fa-solid fa-check dep-check"></i></div>
+    <i class="fa-solid fa-camera dep-icon"></i>
+    <div class="dep-text">Send 3 photos to Kevin before leaving — kitchen counter, primary bathroom, primary bedroom.</div>
+  </div>
+</div>
+
+<!-- BOTTOM BAR -->
+<div class="bottom-bar">
+  <button class="complete-btn" id="complete-btn" onclick="tryComplete()">
+    <i class="fa-solid fa-circle-check"></i>
+    <span id="btn-txt">0% complete — keep going</span>
+  </button>
+</div>
+
+<!-- DONE SCREEN -->
+<div class="done-screen" id="done-screen">
+  <div class="done-bloom">Bloom Clean</div>
+  <div class="done-circle">✓</div>
+  <div class="done-title">Visit Complete</div>
+  <div class="done-info" id="done-info">Loading...</div>
+  <div class="done-reminder">
+    <strong>Before you drive away:</strong><br>
+    Photos sent to Kevin · Departure card on counter · Linen mist in primary bedroom · All supplies packed · Nothing left behind
+  </div>
+  <button class="done-btn" onclick="resetAll()">
+    <i class="fa-solid fa-rotate-left"></i> &nbsp;Start New Visit
+  </button>
+</div>
+
+<script>
+const rooms = ['home','kitchen','bathrooms','bedrooms','living'];
+const svcNames = { standard:'Standard Home Care', deep:'Deep Reset Clean', moveinout:'Move In / Move Out' };
+let currentSvc = 'standard';
+
+document.getElementById('f-date').valueAsDate = new Date();
+
+function setSvc(type, btn) {
+  currentSvc = type;
+  document.querySelectorAll('.svc-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('svc-label-top').textContent = svcNames[type];
+  updateAll();
+}
+
+function showRoom(id, btn) {
+  document.querySelectorAll('.room-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.room-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('room-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function toggle(el) {
+  el.classList.toggle('checked');
+  updateAll();
+}
+function togDep(el) {
+  el.classList.toggle('checked');
+  updateAll();
+}
+
+function updateAll() {
+  const allItems = document.querySelectorAll('.check-item, .dep-item');
+  const done = document.querySelectorAll('.check-item.checked, .dep-item.checked');
+  const total = allItems.length;
+  const count = done.length;
+  const pct = total === 0 ? 0 : Math.round((count / total) * 100);
+
+  document.getElementById('pct-top').textContent = pct + '%';
+  document.getElementById('cnt-top').textContent = count + ' of ' + total;
+  document.getElementById('prog-fill').style.width = pct + '%';
+
+  const btn = document.getElementById('complete-btn');
+  const txt = document.getElementById('btn-txt');
+  if (pct === 100) {
+    btn.classList.add('all-done');
+    btn.classList.remove('ready');
+    txt.textContent = 'All done — tap to complete visit';
+  } else if (pct >= 50) {
+    btn.classList.add('ready');
+    btn.classList.remove('all-done');
+    txt.textContent = pct + '% — almost there, keep going';
+  } else {
+    btn.classList.remove('ready','all-done');
+    txt.textContent = pct + '% complete — keep going';
+  }
+
+  rooms.forEach(r => {
+    const items = document.querySelectorAll('#room-' + r + ' .check-item');
+    const checked = document.querySelectorAll('#room-' + r + ' .check-item.checked');
+    const t = items.length, c = checked.length;
+    const p = t === 0 ? 0 : Math.round((c/t)*100);
+    const tab = document.getElementById('tab-' + r);
+
+    document.getElementById('pct-' + r).textContent = p + '%';
+    document.getElementById('cnt-' + r).textContent = c + '/' + t;
+    document.getElementById('bar-' + r).style.width = p + '%';
+
+    if (t > 0 && c === t) {
+      tab.classList.add('complete');
+    } else {
+      tab.classList.remove('complete');
+    }
+  });
+}
+
+function tryComplete() {
+  const all = document.querySelectorAll('.check-item, .dep-item');
+  const done = document.querySelectorAll('.check-item.checked, .dep-item.checked');
+  if (done.length < all.length) return;
+
+  const client = document.getElementById('f-client').value || 'Client';
+  const lead   = document.getElementById('f-lead').value   || 'Team Lead';
+  const date   = document.getElementById('f-date').value
+    ? new Date(document.getElementById('f-date').value + 'T12:00:00').toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'})
+    : new Date().toLocaleDateString();
+
+  document.getElementById('done-info').innerHTML =
+    `<strong>${client}</strong> · ${svcNames[currentSvc]}<br>${lead} · ${date}`;
+  document.getElementById('done-screen').classList.add('show');
+}
+
+function resetAll() {
+  document.querySelectorAll('.check-item, .dep-item').forEach(el => el.classList.remove('checked'));
+  document.getElementById('f-client').value = '';
+  document.getElementById('f-lead').value   = '';
+  document.getElementById('f-time').value   = '';
+  document.getElementById('f-date').valueAsDate = new Date();
+  document.getElementById('done-screen').classList.remove('show');
+  showRoom('home', document.getElementById('tab-home'));
+  document.querySelectorAll('.room-tab').forEach(t => t.classList.remove('complete','active'));
+  document.getElementById('tab-home').classList.add('active');
+  updateAll();
+}
+
+updateAll();
+</script>
+</body>
+</html>
